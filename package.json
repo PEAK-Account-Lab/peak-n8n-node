@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-peak",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "n8n community node for integrating with the PEAK Accounting Platform",
 	"private": false,
 	"keywords": [
@@ -38,16 +38,7 @@
 			"dist/credentials/PEAKApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/ClientToken/CreateClientToken.node.js",
-			"dist/nodes/Invoice/CreateInvoice.node.js",
-			"dist/nodes/Invoice/CreateExpense.node.js",
-			"dist/nodes/Receipt/CreateReceipt.node.js",
-			"dist/nodes/Contact/GetContact.node.js",
-			"dist/nodes/Product/GetProduct.node.js",
-			"dist/nodes/Product/GetService.node.js",
-			"dist/nodes/DailyJournal/GetAccountCode.node.js",
-			"dist/nodes/DailyJournal/CreateDailyJournal.node.js",
-			"dist/nodes/PaymentMethod/GetPaymentMethod.node.js"
+			"dist/nodes/Peak/Peak.node.js"
 		]
 	},
 	"devDependencies": {

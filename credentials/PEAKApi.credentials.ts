@@ -6,6 +6,7 @@ import {
 export class PEAKApi implements ICredentialType {
 	name = 'PEAKApi';
 	displayName = 'PEAK API';
+	icon = 'file:PEAK.svg' as const;
 	documentationUrl = 'https://peak-api-core.readme.io/reference/peak-open-api';
 
 	properties: INodeProperties[] = [
@@ -21,6 +22,7 @@ export class PEAKApi implements ICredentialType {
 			displayName: 'Connect ID',
 			name: 'connectId',
 			type: 'string',
+			typeOptions: { password: true },
 			default: '',
 			required: true,
 			description: '',
