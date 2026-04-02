@@ -19,7 +19,7 @@
 	"engines": {
 		"node": ">=20.17"
 	},
-	"main": "index.js",
+	"main": "dist/nodes/Peak/Peak.node.js",
 	"scripts": {
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
@@ -27,7 +27,8 @@
 		"lintfix": "eslint nodes credentials package.json --fix",
 		"clean": "rimraf node_modules package-lock.json dist",
 		"n8n:dev": "n8n start",
-		"build": "rimraf dist && tsc && gulp build:icons"
+		"build": "rimraf dist && tsc && gulp build:icons",
+    "prepublishOnly": "npm run build"
 	},
 	"files": [
 		"dist"
@@ -42,7 +43,7 @@
 		]
 	},
 	"devDependencies": {
-		"@n8n/node-cli": "^0.9.0",
+		"@n8n/node-cli": "^0.23.0",
 		"@types/node": "^20.11.30",
 		"@typescript-eslint/eslint-plugin": "^8.47.0",
 		"@typescript-eslint/parser": "^8.47.0",
