@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-peak",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "n8n community node for integrating with the PEAK Accounting Platform",
 	"private": false,
 	"keywords": [
@@ -19,7 +19,7 @@
 	"engines": {
 		"node": ">=20.17"
 	},
-	"main": "index.js",
+	"main": "dist/nodes/Peak/Peak.node.js",
 	"scripts": {
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
@@ -27,7 +27,8 @@
 		"lintfix": "eslint nodes credentials package.json --fix",
 		"clean": "rimraf node_modules package-lock.json dist",
 		"n8n:dev": "n8n start",
-		"build": "rimraf dist && tsc && gulp build:icons"
+		"build": "rimraf dist && tsc && gulp build:icons",
+    "prepublishOnly": "npm run build"
 	},
 	"files": [
 		"dist"
@@ -38,20 +39,11 @@
 			"dist/credentials/PEAKApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/ClientToken/CreateClientToken.node.js",
-			"dist/nodes/Invoice/CreateInvoice.node.js",
-			"dist/nodes/Invoice/CreateExpense.node.js",
-			"dist/nodes/Receipt/CreateReceipt.node.js",
-			"dist/nodes/Contact/GetContact.node.js",
-			"dist/nodes/Product/GetProduct.node.js",
-			"dist/nodes/Product/GetService.node.js",
-			"dist/nodes/DailyJournal/GetAccountCode.node.js",
-			"dist/nodes/DailyJournal/CreateDailyJournal.node.js",
-			"dist/nodes/PaymentMethod/GetPaymentMethod.node.js"
+			"dist/nodes/Peak/Peak.node.js"
 		]
 	},
 	"devDependencies": {
-		"@n8n/node-cli": "^0.9.0",
+		"@n8n/node-cli": "^0.23.0",
 		"@types/node": "^20.11.30",
 		"@typescript-eslint/eslint-plugin": "^8.47.0",
 		"@typescript-eslint/parser": "^8.47.0",
