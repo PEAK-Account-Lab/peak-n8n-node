@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-peak",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"description": "n8n community node for integrating with the PEAK Accounting Platform",
 	"private": false,
 	"keywords": [
@@ -17,7 +17,7 @@
 		"url": "https://github.com/PEAK-Account-Lab/peak-n8n-node.git"
 	},
 	"engines": {
-		"node": ">=20.17"
+		"node": "20.17.0"
 	},
 	"main": "dist/nodes/Peak/Peak.node.js",
 	"scripts": {
@@ -58,7 +58,8 @@
 		"n8n-workflow": "*"
 	},
 	"overrides": {
-		"change-case": "4.1.2"
+		"change-case": "4.1.2",
+    "isolated-vm": "5.0.0"
 	},
 	"publishConfig": {
 		"access": "public"
