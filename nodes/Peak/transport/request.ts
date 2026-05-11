@@ -2,8 +2,9 @@ import type {
 	IDataObject,
 	IExecuteFunctions,
 	IHttpRequestOptions,
+	JsonObject,
 } from 'n8n-workflow';
-import { NodeOperationError } from 'n8n-workflow';
+import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 
 export type PeakApiRequestOptions = {
 	itemIndex: number;
@@ -102,10 +103,7 @@ export async function peakApiRequest(
 			requestOptions,
 		);
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : 'Unknown error occurred while calling PEAK API.';
-
-		throw new NodeOperationError(this.getNode(), `PEAK API request failed: ${message}`, {
+		throw new NodeApiError(this.getNode(), error as JsonObject, {
 			itemIndex: options.itemIndex,
 		});
 	}
