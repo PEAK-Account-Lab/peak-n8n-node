@@ -65,6 +65,12 @@ export class PEAKApi implements ICredentialType {
 		const userToken = credentials.userToken as string;
 		const connectId = credentials.connectId as string;
 
+		if (!userToken || !connectId) {
+			throw new Error(
+				'PEAK credentials are incomplete: both User Token and Connect ID are required. Re-open the credential and ensure all fields are filled.',
+			);
+		}
+
 		const timeStamp = formatTimestampUtc(new Date());
 		const timeSignature = hmacSha1Hex(connectId, timeStamp);
 
