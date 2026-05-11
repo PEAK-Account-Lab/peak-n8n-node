@@ -4,14 +4,6 @@ import type {
 	IHttpRequestOptions,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
-import { formatTimestamp } from '../helpers/time';
-import { hmacSha1Hex } from '../helpers/crypto';
-
-type PeakCredentials = {
-	userToken: string;
-	clientToken: string;
-	connectId: string;
-};
 
 export type PeakApiRequestOptions = {
 	itemIndex: number;
@@ -61,38 +53,25 @@ function buildUrl(
 
 /**
  * Sends an authenticated request to the PEAK API.
+ *
+ * User-Token, Time-Stamp, and Time-Signature headers are added by the
+ * PEAKApi credential's `authenticate` function. This function only handles
+ * the per-call Client-Token header (which is not part of the credential
+ * because it is short-lived and minted via the clientToken operation).
  */
 export async function peakApiRequest(
 	this: IExecuteFunctions,
 	options: PeakApiRequestOptions,
 ): Promise<any> {
-	const creds = (await this.getCredentials('PEAKApi')) as PeakCredentials;
-
-	const userToken = creds.userToken;
-	const connectId = creds.connectId;
-	// 'none' is a sentinel value used by the clientToken operation which generates
-	// the token and therefore cannot provide one itself.
+	// 'none' sentinel: skip Client-Token entirely. Used by the clientToken
+	// creation operation, which calls the endpoint that *issues* the token.
 	const skipClientToken = options.clientTokenOverride === 'none';
-	const clientToken = skipClientToken
-		? ''
-		: (options.clientTokenOverride || creds.clientToken);
-
-	if (!userToken) {
-		throw new NodeOperationError(this.getNode(), 'Missing User Token in PEAKApi credentials.', {
-			itemIndex: options.itemIndex,
-		});
-	}
-
-	if (!connectId) {
-		throw new NodeOperationError(this.getNode(), 'Missing Connect ID in PEAKApi credentials.', {
-			itemIndex: options.itemIndex,
-		});
-	}
+	const clientToken = skipClientToken ? '' : (options.clientTokenOverride ?? '');
 
 	if (!skipClientToken && !clientToken) {
 		throw new NodeOperationError(
 			this.getNode(),
-			'Client Token is required (from credentials or Client Token Override).',
+			'Client Token is required. Run a Create Client Token operation and map its output into the Client Token field.',
 			{ itemIndex: options.itemIndex },
 		);
 	}
@@ -100,15 +79,8 @@ export async function peakApiRequest(
 	const baseUrl = getPeakBaseUrl(options.serverEnvironment);
 	const url = buildUrl(baseUrl, options.path, options.query);
 
-	const timeStamp = formatTimestamp(new Date(), false);
-	const timeSignature = hmacSha1Hex(connectId, timeStamp);
-
 	const headers: IDataObject = {
-		'User-Token': userToken,
 		...(skipClientToken ? {} : { 'Client-Token': clientToken }),
-		'Time-Stamp': timeStamp,
-		'Time-Signature': timeSignature,
-		'Content-Type': 'application/json',
 		...(options.headers ?? {}),
 	};
 
@@ -124,7 +96,11 @@ export async function peakApiRequest(
 	}
 
 	try {
-		return await this.helpers.httpRequest(requestOptions);
+		return await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'PEAKApi',
+			requestOptions,
+		);
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : 'Unknown error occurred while calling PEAK API.';

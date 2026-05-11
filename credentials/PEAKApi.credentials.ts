@@ -1,8 +1,28 @@
+import crypto from 'crypto';
 import {
-	ICredentialType,
-	INodeProperties,
+	ICredentialDataDecryptedObject,
 	ICredentialTestRequest,
+	ICredentialType,
+	IHttpRequestOptions,
+	INodeProperties,
 } from 'n8n-workflow';
+
+function formatTimestampUtc(date: Date): string {
+	const pad = (n: number) => String(n).padStart(2, '0');
+	return (
+		`${date.getUTCFullYear()}` +
+		`${pad(date.getUTCMonth() + 1)}` +
+		`${pad(date.getUTCDate())}` +
+		`${pad(date.getUTCHours())}` +
+		`${pad(date.getUTCMinutes())}` +
+		`${pad(date.getUTCSeconds())}`
+	);
+}
+
+function hmacSha1Hex(key: string, message: string): string {
+	return crypto.createHmac('sha1', key).update(message, 'utf8').digest('hex');
+}
+
 export class PEAKApi implements ICredentialType {
 	name = 'PEAKApi';
 	displayName = 'PEAK API';
@@ -38,12 +58,30 @@ export class PEAKApi implements ICredentialType {
 		},
 	];
 
+	async authenticate(
+		credentials: ICredentialDataDecryptedObject,
+		requestOptions: IHttpRequestOptions,
+	): Promise<IHttpRequestOptions> {
+		const userToken = credentials.userToken as string;
+		const connectId = credentials.connectId as string;
+
+		const timeStamp = formatTimestampUtc(new Date());
+		const timeSignature = hmacSha1Hex(connectId, timeStamp);
+
+		requestOptions.headers = {
+			...(requestOptions.headers ?? {}),
+			'User-Token': userToken,
+			'Time-Stamp': timeStamp,
+			'Time-Signature': timeSignature,
+		};
+
+		return requestOptions;
+	}
+
 	/**
- * NOTE:
- * This is a lightweight smoke test required by n8n automated review.
- * Full authentication (HMAC + timestamp) is performed at runtime
- * when node operations are executed.
- */
+	 * Lightweight smoke test required by n8n automated review.
+	 * Full HMAC signing happens in `authenticate` at request time.
+	 */
 	test: ICredentialTestRequest = {
 		request: {
 			method: 'POST',
