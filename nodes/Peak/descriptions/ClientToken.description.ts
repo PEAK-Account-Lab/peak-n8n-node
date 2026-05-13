@@ -48,19 +48,4 @@ export const clientTokenFields: INodeProperties[] = [
 			},
 		],
 	},
-	{
-		displayName: 'Connect Key',
-		name: 'connectKey',
-		type: 'string',
-		typeOptions: { password: true },
-		default: '',
-		required: true,
-		description: 'Connect Key used to generate the client token',
-		displayOptions: {
-			show: {
-				resource: ['clientToken'],
-				operation: ['create'],
-			},
-		},
-	},
 ];

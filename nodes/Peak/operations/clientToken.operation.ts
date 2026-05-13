@@ -17,28 +17,15 @@ export async function executeClientTokenOperation(
 			itemIndex,
 		) as string;
 
-		const connectKey = (this.getNodeParameter(
-			'connectKey',
-			itemIndex,
-			'',
-		) as string).trim();
-
-		if (!connectKey) {
-			throw new NodeOperationError(
-				this.getNode(),
-				'Connect Key is required.',
-				{ itemIndex },
-			);
-		}
-
 		const creds = (await this.getCredentials('PEAKApi')) as {
 			connectId: string;
+			connectKey: string;
 		};
 
 		const body = {
 			PeakClientToken: {
 				connectId: creds.connectId,
-				password: connectKey,
+				password: creds.connectKey,
 			},
 		};
 
